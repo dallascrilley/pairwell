@@ -12,12 +12,14 @@ Pairwell links employer records to a second dataset with a weighted confidence s
 ## Reproduce the 21,875-record run
 
 The demo downloads 21,875 filing records from the Texas Department of Insurance's public [Workers' compensation non-subscriber employer information](https://data.texas.gov/d/azae-8krr) dataset. It loads 200 target companies, derives 20 synthetic permit records with modified names, and runs the production matcher against them.
+Prerequisites: Node.js 22 or newer, Docker with a running daemon, and outbound
+network access to `data.texas.gov`.
 
 ```bash
 ./scripts/demo.sh
 ```
 
-Expected result:
+Abridged expected result:
 
 ```text
 public_filing_records
@@ -28,9 +30,9 @@ accepted_matches
 ----------------
               20
 
-company_name                              match_confidence
-Angels On The Highway Mobile Grooming Llc              0.91
-American Ecology Environmental Services Corp           0.90
+company_name                                  city       synthetic_permit  match_confidence  synthetic_receipts
+Angels On The Highway Mobile Grooming Llc     Princeton  SYNTH-0014                    0.91          170000.00
+American Ecology Environmental Services Corp  Tyler      SYNTH-0013                    0.90          165000.00
 ```
 
 The release brief referenced 21,875 filing records. The live endpoint reported 106,898 rows and 17,422 distinct filing IDs on 2026-08-12. The demo therefore selects a deterministic 21,875-row sample ordered by filing ID, record type, and company name. It does not present 21,875 as the current endpoint total.
