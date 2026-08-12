@@ -23,13 +23,16 @@ docker run --detach --rm \
   "$image" >/dev/null
 
 for _ in $(seq 1 60); do
-  if docker exec "$container" pg_isready --username postgres --dbname postgres >/dev/null 2>&1; then
+  if docker exec "$container" pg_isready --host 127.0.0.1 --username postgres --dbname postgres >/dev/null 2>&1; then
     break
   fi
   sleep 1
 done
 
-docker exec "$container" pg_isready --username postgres --dbname postgres >/dev/null
+if ! docker exec "$container" pg_isready --host 127.0.0.1 --username postgres --dbname postgres >/dev/null; then
+  printf 'PostgreSQL did not become ready within 60 seconds.\n' >&2
+  exit 1
+fi
 
 for sql_file in \
   tests/000_bootstrap.sql \

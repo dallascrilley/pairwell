@@ -76,7 +76,12 @@ BEGIN
   PERFORM test_assert(result.batches_processed = 2, 'batch refresh processes two batches');
   PERFORM test_assert(result.total_matches = 2, 'batch refresh returns two matches');
   PERFORM test_assert(
-    (SELECT COUNT(*) FROM company_enrichments WHERE source_id = 'tabc_permits') = 2,
+    (SELECT source_record_id FROM company_enrichments
+     WHERE company_id = '11111111-1111-4111-8111-111111111111') = 'P-ACME-BEST'
+    AND (SELECT source_record_id FROM company_enrichments
+         WHERE company_id = '22222222-2222-4222-8222-222222222222') = 'P-BLUE'
+    AND (SELECT total_annual_revenue FROM companies
+         WHERE id = '11111111-1111-4111-8111-111111111111') = 1250000,
     'batch refresh persists the same two matches'
   );
 END;

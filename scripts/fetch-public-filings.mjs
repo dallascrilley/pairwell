@@ -57,7 +57,7 @@ export async function fetchPublicFilings(limit, fetchImpl = fetch) {
   const rows = [];
 
   for (let pageNumber = 1; rows.length < limit; pageNumber += 1) {
-    const pageSize = Math.min(PAGE_SIZE, limit - rows.length);
+    const pageSize = PAGE_SIZE;
     const response = await fetchImpl(ENDPOINT, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },

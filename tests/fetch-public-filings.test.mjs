@@ -4,27 +4,29 @@ import test from 'node:test';
 import { fetchPublicFilings, toCsv } from '../scripts/fetch-public-filings.mjs';
 
 test('fetchPublicFilings paginates deterministically to the requested limit', async () => {
+  const sourceRows = Array.from({ length: 1001 }, (_, index) => ({
+    filing_id: String(index + 1),
+    company_name: `Company ${index + 1}`,
+  }));
   const requests = [];
   const fetchImpl = async (_url, options) => {
     const body = JSON.parse(options.body);
     requests.push(body);
-    const count = body.page.pageNumber === 1 ? 1000 : 1;
-    const start = body.page.pageNumber === 1 ? 1 : 1001;
+    const { pageNumber, pageSize } = body.page;
+    const offset = (pageNumber - 1) * pageSize;
     return {
       ok: true,
-      json: async () => Array.from({ length: count }, (_, index) => ({
-        filing_id: String(start + index),
-        company_name: `Company ${start + index}`,
-      })),
+      json: async () => sourceRows.slice(offset, offset + pageSize),
     };
   };
 
   const rows = await fetchPublicFilings(1001, fetchImpl);
 
   assert.equal(rows.length, 1001);
+  assert.equal(rows.at(-1).filing_id, '1001');
   assert.deepEqual(requests.map((request) => request.page), [
     { pageNumber: 1, pageSize: 1000 },
-    { pageNumber: 2, pageSize: 1 },
+    { pageNumber: 2, pageSize: 1000 },
   ]);
   assert.match(requests[0].query, /ORDER BY filing_id, record_type, company_name$/);
 });
