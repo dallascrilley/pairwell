@@ -83,6 +83,10 @@ The script starts a disposable PostgreSQL 17 container, runs the Node downloader
 - The live Texas endpoint can change after this repository's verification date.
 - The SQL uses PostgreSQL-specific `pg_trgm`, JSONB, and PL/pgSQL features.
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Security reports go through [SECURITY.md](SECURITY.md).
+
 ## License
 
 MIT. Copyright (c) 2026 Dallas Crilley.
